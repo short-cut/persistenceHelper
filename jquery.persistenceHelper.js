@@ -1,9 +1,16 @@
 // requirements: jQuery, jQuery.cookie
 window.persistenceHelper = {};
+jQuery = jQuery || null;
 
 (function($){
+    if (typeof $.cookie == 'function') {
+        $.cookie.defaults.path = '/';
+        $.cookie.json = true;
+    }
     persistenceHelper.config = {
-        prefix              : 'et_'
+        prefix              : 'et_',
+        persistentCookie    : 365,
+        forceCookie         : false
     };
 
     /**
@@ -56,12 +63,18 @@ window.persistenceHelper = {};
     persistenceHelper.set = function(key, data, persistent){
         persistent = persistent || false;
         key = persistenceHelper.config.prefix + key;
-        if (window['sessionStorage'] && window['localStorage']) {
+        if (window['sessionStorage'] && window['localStorage'] && !persistenceHelper.config.forceCookie) {
             if ($.isPlainObject(data)) {
                 data = JSON.stringify(data);
             }
             var storage = (persistent) ? 'localStorage' : 'sessionStorage';
             window[storage].setItem(key, data);
+        } else if ($.isFunction($.cookie)) {
+            var options = {};
+            if (persistent) {
+                options.expires = persistenceHelper.config.persistentCookie;
+            }
+            $.cookie(key, data);
         } else {
             throw 'persistenceHelper: storage is not possible, because there is no storage medium available';
         }
@@ -80,6 +93,8 @@ window.persistenceHelper = {};
             try {
                 data = JSON.parse(data);
             } catch (e) {}
+        } else if ($.isFunction($.cookie)) {
+            data = $.cookie(key);
         } else {
             throw 'persistenceHelper: unable to retrieve data from storage because there is no storage available';
         }
@@ -89,7 +104,6 @@ window.persistenceHelper = {};
     /**
      * Removes entries with key (prefixed) from all storages and cookies.
      * @param key
-     * @param raw
      */
     persistenceHelper.clear = function(key, raw) {
         if (!key) {
@@ -105,6 +119,9 @@ window.persistenceHelper = {};
             window.localStorage.removeItem(key);
             window.sessionStorage.removeItem((key));
         }
+        if ($.isFunction($.removeCookie)) {
+            $.removeCookie(key, {path : '/'});
+        }
         return this;
     }
-})();
+})(jQuery);
