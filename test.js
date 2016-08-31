@@ -1,14 +1,17 @@
 (function () {
-    var newConfig = {'ttl' : 3600, 'prefix' : 'new_', 'version' : 2.3, 'wrongIndex' : false}
+
+    var newConfig = {'ttl' : 3600, 'prefix' : 'et_', 'version' : 2.5, 'wrongProp' : false}
     scStorage.setConfig(newConfig);
     console.log('new configuration');
     console.log(scStorage.config);
 
     console.log(' ');
-    console.log('is available: '  + scStorage.isStorageAvailable());
-    scStorage.set('foo', {'point': 'yes', 'other' : 3}, false);
+    var until = new Date();
+    until.setMonth(until.getMonth() + 1);
+    scStorage.set('foo', {'point': 'yes', 'other' : 3}, true, until);
+
     console.log(scStorage.get('foo'));
-    // scStorage.remove('foo');
+    scStorage.remove('foo');
     console.log(scStorage.get('foo'));
 
     console.log(' ');

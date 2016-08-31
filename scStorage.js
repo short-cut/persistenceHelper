@@ -197,7 +197,9 @@ window.scStorage = {};
             try {
                 storageItem = JSON.parse(storageItem);
                 payload = storageItem.payload;
-            } catch (e) {}
+            } catch (e) {
+                return null;
+            }
 
             // purge item if now under version control or if an outdated version
             if (scStorage.config.version !== null &&
