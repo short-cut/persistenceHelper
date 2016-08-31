@@ -11,6 +11,8 @@ window.scStorage = {};
         defaultGlobalNameSpace : 'scdefault'
     };
 
+    scStorage.isAvailable = null;
+
     /**
      * Sets configuration data for scStorage. Tests if a property exists, currently there are no validation.
      * @param config object
@@ -94,6 +96,37 @@ window.scStorage = {};
         }
         return false;
     };
+
+    /**
+     * test for feature availability
+     * @returns {boolean}
+     */
+    scStorage.isStorageAvailable = function () {
+
+        if (typeof scStorage.isAvailable == "boolean") {
+            return scStorage.isAvailable;
+        }
+
+        if (window['sessionStorage'] || window['localStorage']) {
+            var testString = 'yes';
+            try {
+                window.localStorage.setItem('lsAvailable', testString);
+                if (localStorage.getItem('lsAvailable') != 'yes') {
+                    scStorage.isAvailable = true;
+                }
+                localStorage.removeItem('lsAvailable');
+                scStorage.isAvailable = true;
+            } catch(e) {
+                scStorage.isAvailable = false;
+            }
+        } else {
+            scStorage.isAvailable = false;
+        }
+        return scStorage.isAvailable;
+
+    };
+
+
 
     /**
      * Sets data under key in the browser storage or in a cookie.

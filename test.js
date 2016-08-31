@@ -4,6 +4,10 @@
     console.log('new configuration');
     console.log(scStorage.config);
 
+    console.log('');
+    console.log('is available');
+    console.log(scStorage.isStorageAvailable());
+
     console.log('setting globals');
     scStorage.setGlobal('foo', 3);
     scStorage.setGlobal('bar', 5);
