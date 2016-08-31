@@ -1,4 +1,7 @@
-// requirements: jQuery, jQuery.cookie
+/**
+ * version 1.0
+ */
+
 window.scStorage = {};
 
 (function($){
