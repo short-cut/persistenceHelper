@@ -3,7 +3,9 @@ window.scStorage = {};
 
 (function($){
     scStorage.config = {
-        prefix              : 'et_'
+        prefix              : 'scs_',
+        ttl: null,
+        version: null
     };
 
     /**
