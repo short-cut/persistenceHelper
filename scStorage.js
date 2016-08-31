@@ -1,8 +1,8 @@
 // requirements: jQuery, jQuery.cookie
-window.persistenceHelper = {};
+window.scStorage = {};
 
 (function($){
-    persistenceHelper.config = {
+    scStorage.config = {
         prefix              : 'et_'
     };
 
@@ -10,7 +10,7 @@ window.persistenceHelper = {};
      * Used for registering global variables from local context (encapsulated functions)
      * @type {{}}
      */
-    persistenceHelper.globals = {};
+    scStorage.globals = {};
 
     /**
      * Adds a variable to the global context.
@@ -18,12 +18,12 @@ window.persistenceHelper = {};
      * @param value value to save
      * @param namespace string to separate global variables regarding their context
      */
-    persistenceHelper.addGlobal = function(key, value, namespace) {
+    scStorage.addGlobal = function(key, value, namespace) {
         if (typeof namespace != "string" || typeof  namespace == 'undefined') {
             namespace = 'default';
         }
         if (typeof key != 'string') {
-            throw "persistenceHelper::addGlobal parameter key must be a string";
+            throw "scStorage::addGlobal parameter key must be a string";
         }
         if (typeof this.globals[namespace] != "object") {
             this.globals[namespace] = {};
@@ -37,7 +37,7 @@ window.persistenceHelper = {};
      * @param namespace string defaults do "default"
      * @returns {*|null}
      */
-    persistenceHelper.getGlobal = function(key, namespace) {
+    scStorage.getGlobal = function(key, namespace) {
         if (typeof namespace != "string" || typeof  namespace == 'undefined') {
             namespace = 'default';
         }
@@ -53,9 +53,9 @@ window.persistenceHelper = {};
      * @param data string|PlainObject The data to stored (if a plain object it will be parsed into an json-string)
      * @param persistent boolean If true it will be stored in LocalStorage instead of SessionStorage (or a longer cookie expiry)
      */
-    persistenceHelper.set = function(key, data, persistent){
+    scStorage.set = function(key, data, persistent){
         persistent = persistent || false;
-        key = persistenceHelper.config.prefix + key;
+        key = scStorage.config.prefix + key;
         if (window['sessionStorage'] && window['localStorage']) {
             if ($.isPlainObject(data)) {
                 data = JSON.stringify(data);
@@ -63,7 +63,7 @@ window.persistenceHelper = {};
             var storage = (persistent) ? 'localStorage' : 'sessionStorage';
             window[storage].setItem(key, data);
         } else {
-            throw 'persistenceHelper: storage is not possible, because there is no storage medium available';
+            throw 'scStorage: storage is not possible, because there is no storage medium available';
         }
     };
 
@@ -72,16 +72,16 @@ window.persistenceHelper = {};
      * @param key string will be prefixed
      * @returns {null|*}
      */
-    persistenceHelper.get = function(key) {
-        key     = persistenceHelper.config.prefix + key;
+    scStorage.get = function(key) {
+        key     = scStorage.config.prefix + key;
         data    = null;
-        if (window['sessionStorage'] && window['localStorage'] && !persistenceHelper.config.forceCookie) {
+        if (window['sessionStorage'] && window['localStorage'] && !scStorage.config.forceCookie) {
             data = window['sessionStorage'].getItem(key) || window['localStorage'].getItem(key);
             try {
                 data = JSON.parse(data);
             } catch (e) {}
         } else {
-            throw 'persistenceHelper: unable to retrieve data from storage because there is no storage available';
+            throw 'scStorage: unable to retrieve data from storage because there is no storage available';
         }
         return data;
     };
@@ -91,15 +91,15 @@ window.persistenceHelper = {};
      * @param key
      * @param raw
      */
-    persistenceHelper.clear = function(key, raw) {
+    scStorage.clear = function(key, raw) {
         if (!key) {
-            throw "persistenceHelper::clear key is required";
+            throw "scStorage::clear key is required";
         }
         if (typeof raw != 'boolean' || raw == false) {
             raw = false;
         }
         if (!raw) {
-            key     = persistenceHelper.config.prefix + key;
+            key     = scStorage.config.prefix + key;
         }
         if (window['sessionStorage'] && window['localStorage']) {
             window.localStorage.removeItem(key);
