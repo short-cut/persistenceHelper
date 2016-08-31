@@ -2,11 +2,12 @@
 window.scStorage = {};
 
 (function($){
+
     scStorage.config = {
         prefix: 'scs_', // namespace
         ttl: null, // should be an integer (seconds) for the ttl (time to live)
         version: null, // a version number, makes it possible to refactor structure or meaning of data
-        defaultUseSession : false, // uses session per default
+        defaultUsePersistent : true, // uses session per default
         defaultGlobalNameSpace : 'scdefault'
     };
 
@@ -92,7 +93,7 @@ window.scStorage = {};
             return true;
         }
         return false;
-    }
+    };
 
     /**
      * Sets data under key in the browser storage or in a cookie.
@@ -101,8 +102,9 @@ window.scStorage = {};
      * @param persistent boolean If true it will be stored in LocalStorage instead of SessionStorage (or a longer cookie expiry)
      */
     scStorage.set = function(key, data, persistent){
-        persistent = persistent || false;
+        persistent = persistent || scStorage.config.defaultUsePersistent;
         key = scStorage.config.prefix + key;
+
         if (window['sessionStorage'] && window['localStorage']) {
             if ($.isPlainObject(data)) {
                 data = JSON.stringify(data);
