@@ -31,7 +31,11 @@ window.scStorage = {};
     scStorage.setConfig = function (config) {
         for (var c in config) {
             if (c in scStorage.config) {
-                scStorage.config[c] = config[c];
+                var value = config[c];
+                if (c == 'version') {
+                    value = parseFloat(value);
+                }
+                scStorage.config[c] = value;
             }
         }
     };

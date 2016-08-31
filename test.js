@@ -1,6 +1,6 @@
 (function () {
 
-    var newConfig = {'ttl' : 3600, 'prefix' : 'et_', 'version' : 2.5, 'wrongProp' : false}
+    var newConfig = {'ttl' : 3600, 'prefix' : 'et_', 'version' : '2.5', 'wrongProp' : false}
     scStorage.setConfig(newConfig);
     console.log('new configuration');
     console.log(scStorage.config);
