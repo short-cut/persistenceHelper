@@ -4,10 +4,14 @@
     console.log('new configuration');
     console.log(scStorage.config);
 
-    console.log('');
-    console.log('is available');
-    console.log(scStorage.isStorageAvailable());
+    console.log(' ');
+    console.log('is available: '  + scStorage.isStorageAvailable());
+    scStorage.set('foo', {'point': 'yes', 'other' : 3});
+    console.log(scStorage.get('foo'));
+    scStorage.remove('foo');
+    console.log(scStorage.get('foo'));
 
+    console.log(' ');
     console.log('setting globals');
     scStorage.setGlobal('foo', 3);
     scStorage.setGlobal('bar', 5);
@@ -20,11 +24,13 @@
 
     console.log(scStorage.getAllGlobals());
 
+    console.log(' ');
     console.log('removing global vars');
     scStorage.removeGlobal('bar');
     scStorage.removeGlobal('notThere');
     scStorage.removeGlobal('hip', 'hop');
     scStorage.removeGlobal('bar', 'customNameSpace');
     console.log(scStorage.getAllGlobals());
+
 
 })();

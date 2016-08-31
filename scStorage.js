@@ -3,6 +3,10 @@ window.scStorage = {};
 
 (function($){
 
+    /**
+     * configuration
+     * @type {{prefix: string, ttl: null, version: null, defaultUsePersistent: boolean, defaultGlobalNameSpace: string}}
+     */
     scStorage.config = {
         prefix: 'scs_', // namespace
         ttl: null, // should be an integer (seconds) for the ttl (time to live)
@@ -11,6 +15,11 @@ window.scStorage = {};
         defaultGlobalNameSpace : 'scdefault'
     };
 
+    /**
+     * remember if the device is able to store.
+     * IMPORTANT: DO NOT USE DIRECTLY, USE THE METHOD scStorage.isStorageAvailable INSTEAD!
+     * @type {null}
+     */
     scStorage.isAvailable = null;
 
     /**
@@ -126,8 +135,6 @@ window.scStorage = {};
 
     };
 
-
-
     /**
      * Sets data under key in the browser storage or in a cookie.
      * @param key string The key of the storage entry, it will be prefixed with config.prefix
@@ -138,8 +145,8 @@ window.scStorage = {};
         persistent = persistent || scStorage.config.defaultUsePersistent;
         key = scStorage.config.prefix + key;
 
-        if (window['sessionStorage'] && window['localStorage']) {
-            if ($.isPlainObject(data)) {
+        if (scStorage.isStorageAvailable()) {
+            if (typeof data == "object") {
                 data = JSON.stringify(data);
             }
             var storage = (persistent) ? 'localStorage' : 'sessionStorage';
@@ -147,6 +154,7 @@ window.scStorage = {};
         } else {
             throw 'scStorage: storage is not possible, because there is no storage medium available';
         }
+        return scStorage;
     };
 
     /**
@@ -157,8 +165,8 @@ window.scStorage = {};
     scStorage.get = function(key) {
         key     = scStorage.config.prefix + key;
         data    = null;
-        if (window['sessionStorage'] && window['localStorage'] && !scStorage.config.forceCookie) {
-            data = window['sessionStorage'].getItem(key) || window['localStorage'].getItem(key);
+        if (scStorage.isStorageAvailable()) {
+            data = window['localStorage'].getItem(key) || window['sessionStorage'].getItem(key);
             try {
                 data = JSON.parse(data);
             } catch (e) {}
@@ -171,22 +179,25 @@ window.scStorage = {};
     /**
      * Removes entries with key (prefixed) from all storages and cookies.
      * @param key
-     * @param raw
+     * @param raw bool makes it possible to clear a key without the configured prefix
      */
-    scStorage.clear = function(key, raw) {
+    scStorage.remove = function(key, raw) {
         if (!key) {
             throw "scStorage::clear key is required";
         }
+
         if (typeof raw != 'boolean' || raw == false) {
             raw = false;
         }
+
         if (!raw) {
             key     = scStorage.config.prefix + key;
         }
-        if (window['sessionStorage'] && window['localStorage']) {
+
+        if (scStorage.isStorageAvailable()) {
             window.localStorage.removeItem(key);
             window.sessionStorage.removeItem((key));
         }
-        return this;
+        return scStorage;
     }
 })();
