@@ -6,7 +6,8 @@ window.scStorage = {};
         prefix: 'scs_', // namespace
         ttl: null, // should be an integer (seconds) for the ttl (time to live)
         version: null, // a version number, makes it possible to refactor structure or meaning of data
-        defaultUseSession : false // uses session per default
+        defaultUseSession : false, // uses session per default
+        defaultGlobalNameSpace : 'scdefault'
     };
 
     /**
@@ -34,8 +35,9 @@ window.scStorage = {};
      * @param namespace string to separate global variables regarding their context
      */
     scStorage.addGlobal = function(key, value, namespace) {
+        // setting namespace, if not set as parameter
         if (typeof namespace != "string" || typeof  namespace == 'undefined') {
-            namespace = 'default';
+            namespace = scStorage.config.defaultGlobalNameSpace;
         }
         if (typeof key != 'string') {
             throw "scStorage::addGlobal parameter key must be a string";
@@ -54,13 +56,21 @@ window.scStorage = {};
      */
     scStorage.getGlobal = function(key, namespace) {
         if (typeof namespace != "string" || typeof  namespace == 'undefined') {
-            namespace = 'default';
+            namespace = scStorage.config.defaultGlobalNameSpace;
         }
         if (!this.globals[namespace]) {
             return null;
         }
         return (this.globals[namespace][key]) ? this.globals[namespace][key] : null;
-    }
+    };
+
+    /**
+     * return all global registered vars
+     * @returns {{}}
+     */
+    scStorage.getAllGlobals = function () {
+        return scStorage.globals;
+    };
 
     /**
      * Sets data under key in the browser storage or in a cookie.
