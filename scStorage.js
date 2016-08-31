@@ -20,7 +20,7 @@ window.scStorage = {};
                 scStorage.config[c] = config[c];
             }
         }
-    }
+    };
 
     /**
      * Used for registering global variables from local context (encapsulated functions)
@@ -34,7 +34,7 @@ window.scStorage = {};
      * @param value value to save
      * @param namespace string to separate global variables regarding their context
      */
-    scStorage.addGlobal = function(key, value, namespace) {
+    scStorage.setGlobal = function(key, value, namespace) {
         // setting namespace, if not set as parameter
         if (typeof namespace != "string" || typeof  namespace == 'undefined') {
             namespace = scStorage.config.defaultGlobalNameSpace;
@@ -61,7 +61,7 @@ window.scStorage = {};
         if (!this.globals[namespace]) {
             return null;
         }
-        return (this.globals[namespace][key]) ? this.globals[namespace][key] : null;
+        return (key in this.globals[namespace]) ? this.globals[namespace][key] : null;
     };
 
     /**
@@ -71,6 +71,28 @@ window.scStorage = {};
     scStorage.getAllGlobals = function () {
         return scStorage.globals;
     };
+
+    /**
+     * Removes a global
+     * @param key
+     * @param namespace
+     * @returns {boolean}
+     */
+    scStorage.removeGlobal = function (key, namespace) {
+        if (typeof namespace != "string" || typeof  namespace == 'undefined') {
+            namespace = scStorage.config.defaultGlobalNameSpace;
+        }
+
+        if (!this.globals[namespace]) {
+            return false;
+        }
+
+        if (key in scStorage.globals[namespace]) {
+            delete scStorage.globals[namespace][key];
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Sets data under key in the browser storage or in a cookie.
