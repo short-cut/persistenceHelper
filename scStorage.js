@@ -5,7 +5,8 @@ window.scStorage = {};
     scStorage.config = {
         prefix: 'scs_', // namespace
         ttl: null, // should be an integer (seconds) for the ttl (time to live)
-        version: null // a version number, makes it possible to refactor structure or meaning of data
+        version: null, // a version number, makes it possible to refactor structure or meaning of data
+        defaultUseSession : false // uses session per default
     };
 
     /**
