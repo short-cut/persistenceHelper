@@ -3,10 +3,18 @@ window.scStorage = {};
 
 (function($){
     scStorage.config = {
-        prefix              : 'scs_',
+        prefix: 'scs_',
         ttl: null,
         version: null
     };
+
+    scStorage.setConfig = function (config) {
+        for (var c in config) {
+            if (c in scStorage.config) {
+                scStorage.config[c] = config[c];
+            }
+        }
+    }
 
     /**
      * Used for registering global variables from local context (encapsulated functions)
