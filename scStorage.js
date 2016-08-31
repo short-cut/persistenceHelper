@@ -142,7 +142,8 @@ window.scStorage = {};
      * @param persistent boolean If true it will be stored in LocalStorage instead of SessionStorage (or a longer cookie expiry)
      */
     scStorage.set = function(key, data, persistent){
-        persistent = persistent || scStorage.config.defaultUsePersistent;
+
+        persistent = (typeof persistent != 'undefined') ? persistent : scStorage.config.defaultUsePersistent;
         key = scStorage.config.prefix + key;
 
         if (scStorage.isStorageAvailable()) {
@@ -151,6 +152,7 @@ window.scStorage = {};
             }
             var storage = (persistent) ? 'localStorage' : 'sessionStorage';
             window[storage].setItem(key, data);
+
         } else {
             throw 'scStorage: storage is not possible, because there is no storage medium available';
         }

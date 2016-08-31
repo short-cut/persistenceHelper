@@ -6,9 +6,9 @@
 
     console.log(' ');
     console.log('is available: '  + scStorage.isStorageAvailable());
-    scStorage.set('foo', {'point': 'yes', 'other' : 3});
+    scStorage.set('foo', {'point': 'yes', 'other' : 3}, false);
     console.log(scStorage.get('foo'));
-    scStorage.remove('foo');
+    // scStorage.remove('foo');
     console.log(scStorage.get('foo'));
 
     console.log(' ');
