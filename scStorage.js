@@ -9,7 +9,6 @@ window.scStorage = {};
      */
     scStorage.config = {
         prefix: 'scs_', // namespace
-        ttl: null, // should be an integer (seconds) for the ttl (time to live)
         version: null, // a version number, makes it possible to refactor structure or meaning of data
         defaultUsePersistent : true, // uses session per default
         defaultGlobalNameSpace : 'scdefault'
@@ -140,10 +139,22 @@ window.scStorage = {};
      * @param key string The key of the storage entry, it will be prefixed with config.prefix
      * @param data string|PlainObject The data to stored (if a plain object it will be parsed into an json-string)
      * @param persistent boolean If true it will be stored in LocalStorage instead of SessionStorage (or a longer cookie expiry)
+     * @param validUntil date object
      */
-    scStorage.set = function(key, data, persistent){
+    scStorage.set = function(key, data, persistent, validUntil){
 
         persistent = (typeof persistent != 'undefined') ? persistent : scStorage.config.defaultUsePersistent;
+
+        if (persistent && typeof validUntil == 'object') {
+            try {
+                validUntil = validUntil.toISOString();
+            } catch (e) {
+                throw "parameter validUntil must be a javascript date object.";
+            }
+        } else {
+            validUntil = false;
+        }
+
         key = scStorage.config.prefix + key;
 
         if (scStorage.isStorageAvailable()) {
@@ -157,7 +168,10 @@ window.scStorage = {};
                 }
                 storageItem.version = scStorage.config.version;
             }
-            // TODO implement ttl
+
+            if (validUntil) {
+                storageItem.validUntil = validUntil;
+            }
 
             window[storage].setItem(key, JSON.stringify(storageItem));
 
@@ -174,27 +188,36 @@ window.scStorage = {};
      */
     scStorage.get = function(key) {
 
-        key     = scStorage.config.prefix + key;
-        var payload    = null;
-
+        key = scStorage.config.prefix + key;
+        var payload = null;
 
         if (scStorage.isStorageAvailable()) {
 
             var storageItem = window['localStorage'].getItem(key) || window['sessionStorage'].getItem(key);
             try {
                 storageItem = JSON.parse(storageItem);
+                payload = storageItem.payload;
             } catch (e) {}
 
             // purge item if now under version control or if an outdated version
             if (scStorage.config.version !== null &&
                     (!storageItem['version'] || storageItem['version'] < scStorage.config.version)) {
                 scStorage.remove(key, true);
-                storageItem.payload = null;
+                return null;
+            }
+
+            if (storageItem.validUntil) {
+                var validUntil = new Date(storageItem.validUntil);
+                var now = new Date();
+                if (validUntil < now) {
+                    scStorage.remove(key, true);
+                    return null;
+                }
             }
         } else {
             throw 'scStorage: unable to retrieve data from storage because there is no storage available';
         }
-        return storageItem.payload;
+        return payload;
     };
 
     /**
