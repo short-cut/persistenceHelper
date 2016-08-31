@@ -152,7 +152,6 @@ window.scStorage = {};
             var storageItem = { 'payload': data };
 
             if (scStorage.config.version !== null) {
-
                 if(typeof scStorage.config.version != "number") {
                     throw "scStorage::set version must be numeric."
                 }
@@ -178,21 +177,20 @@ window.scStorage = {};
         key     = scStorage.config.prefix + key;
         var payload    = null;
 
+
         if (scStorage.isStorageAvailable()) {
 
             var storageItem = window['localStorage'].getItem(key) || window['sessionStorage'].getItem(key);
+            try {
+                storageItem = JSON.parse(storageItem);
+            } catch (e) {}
 
             // purge item if now under version control or if an outdated version
             if (scStorage.config.version !== null &&
                     (!storageItem['version'] || storageItem['version'] < scStorage.config.version)) {
                 scStorage.remove(key, true);
-                return null;
+                storageItem.payload = null;
             }
-
-            try {
-                storageItem = JSON.parse(storageItem);
-            } catch (e) {}
-
         } else {
             throw 'scStorage: unable to retrieve data from storage because there is no storage available';
         }
