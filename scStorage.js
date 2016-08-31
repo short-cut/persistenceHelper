@@ -3,11 +3,15 @@ window.scStorage = {};
 
 (function($){
     scStorage.config = {
-        prefix: 'scs_',
-        ttl: null,
-        version: null
+        prefix: 'scs_', // namespace
+        ttl: null, // should be an integer (seconds) for the ttl (time to live)
+        version: null // a version number, makes it possible to refactor structure or meaning of data
     };
 
+    /**
+     * Sets configuration data for scStorage. Tests if a property exists, currently there are no validation.
+     * @param config object
+     */
     scStorage.setConfig = function (config) {
         for (var c in config) {
             if (c in scStorage.config) {
