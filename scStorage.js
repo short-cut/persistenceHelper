@@ -147,11 +147,20 @@ window.scStorage = {};
         key = scStorage.config.prefix + key;
 
         if (scStorage.isStorageAvailable()) {
-            if (typeof data == "object") {
-                data = JSON.stringify(data);
-            }
+
             var storage = (persistent) ? 'localStorage' : 'sessionStorage';
-            window[storage].setItem(key, data);
+            var storageItem = { 'payload': data };
+
+            if (scStorage.config.version !== null) {
+
+                if(typeof scStorage.config.version != "number") {
+                    throw "scStorage::set version must be numeric."
+                }
+                storageItem.version = scStorage.config.version;
+            }
+            // TODO implement ttl
+
+            window[storage].setItem(key, JSON.stringify(storageItem));
 
         } else {
             throw 'scStorage: storage is not possible, because there is no storage medium available';
@@ -165,17 +174,29 @@ window.scStorage = {};
      * @returns {null|*}
      */
     scStorage.get = function(key) {
+
         key     = scStorage.config.prefix + key;
-        data    = null;
+        var payload    = null;
+
         if (scStorage.isStorageAvailable()) {
-            data = window['localStorage'].getItem(key) || window['sessionStorage'].getItem(key);
+
+            var storageItem = window['localStorage'].getItem(key) || window['sessionStorage'].getItem(key);
+
+            // purge item if now under version control or if an outdated version
+            if (scStorage.config.version !== null &&
+                    (!storageItem['version'] || storageItem['version'] < scStorage.config.version)) {
+                scStorage.remove(key, true);
+                return null;
+            }
+
             try {
-                data = JSON.parse(data);
+                storageItem = JSON.parse(storageItem);
             } catch (e) {}
+
         } else {
             throw 'scStorage: unable to retrieve data from storage because there is no storage available';
         }
-        return data;
+        return storageItem.payload;
     };
 
     /**
