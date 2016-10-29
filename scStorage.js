@@ -183,7 +183,7 @@ window.scStorage = {};
             window[storage].setItem(key, JSON.stringify(storageItem));
 
         } else {
-            throw 'scStorage: storage is not possible, because there is no storage medium available';
+            return NULL;
         }
         return scStorage;
     };
@@ -224,7 +224,7 @@ window.scStorage = {};
                 }
             }
         } else {
-            throw 'scStorage: unable to retrieve data from storage because there is no storage available';
+            return NULL;
         }
         return payload;
     };
